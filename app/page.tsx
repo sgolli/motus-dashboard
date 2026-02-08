@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -33,6 +33,49 @@ export default function Dashboard() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+
+  // Fetch jobs from API
+  const fetchJobs = useCallback(async () => {
+    try {
+      const response = await fetch('/api/jobs');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch jobs: ${response.status}`);
+      }
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      setNodes(data.nodes);
+      setEdges(data.edges);
+      setLastUpdate(new Date());
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching jobs:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch jobs');
+      // Keep using fallback data on error
+    } finally {
+      setLoading(false);
+    }
+  }, [setNodes, setEdges]);
+
+  // Initial fetch on mount
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
+
+  // Auto-refresh every 60 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchJobs();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [fetchJobs]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -63,10 +106,26 @@ export default function Dashboard() {
           Motus Dashboard
         </h1>
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
-            <div className="animate-pulse" style={{ width: '8px', height: '8px', background: '#22c55e', borderRadius: '50%' }}></div>
-            <span style={{ color: '#8b949e' }}>All Systems Active</span>
-          </div>
+          {error && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
+              <div style={{ width: '8px', height: '8px', background: '#ef4444', borderRadius: '50%' }}></div>
+              <span style={{ color: '#ef4444' }}>{error}</span>
+            </div>
+          )}
+          {loading && !lastUpdate && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
+              <div className="animate-pulse" style={{ width: '8px', height: '8px', background: '#eab308', borderRadius: '50%' }}></div>
+              <span style={{ color: '#8b949e' }}>Loading...</span>
+            </div>
+          )}
+          {!loading && lastUpdate && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
+              <div className="animate-pulse" style={{ width: '8px', height: '8px', background: '#22c55e', borderRadius: '50%' }}></div>
+              <span style={{ color: '#8b949e' }}>
+                Last updated: {lastUpdate.toLocaleTimeString()}
+              </span>
+            </div>
+          )}
         </div>
       </header>
 
