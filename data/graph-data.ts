@@ -10,12 +10,22 @@ export interface NodeData {
   delivery?: string;
 }
 
+// Layout: 5 vertical columns
+// Col 1 (x=0):   Integrations (green)
+// Col 2 (x=300):  Cron Jobs (blue)
+// Col 3 (x=600):  Agents (purple)
+// Col 4 (x=600):  One-shots (orange) — below agents
+// Col 5 (x=900):  Delivery (pink)
+
+const COL = { integration: 0, cron: 300, agent: 600, oneshot: 600, delivery: 900 };
+const ROW = 140; // vertical spacing
+
 export const initialNodes: Node<NodeData>[] = [
-  // Agent Core
+  // ── Column 3: Agents (purple) ──
   {
     id: 'motus',
     type: 'agent',
-    position: { x: 500, y: 100 },
+    position: { x: COL.agent, y: 0 },
     data: {
       label: 'Motus (Main Agent)',
       model: 'Opus',
@@ -26,7 +36,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'subagents',
     type: 'agent',
-    position: { x: 700, y: 100 },
+    position: { x: COL.agent, y: ROW },
     data: {
       label: 'Sub-agents',
       model: 'Sonnet/Opus',
@@ -35,11 +45,11 @@ export const initialNodes: Node<NodeData>[] = [
     },
   },
 
-  // Cron Jobs
+  // ── Column 2: Cron Jobs (blue) — vertical stack ──
   {
     id: 'morning-brief',
     type: 'cron',
-    position: { x: 400, y: 300 },
+    position: { x: COL.cron, y: 0 },
     data: {
       label: 'Morning Brief',
       model: 'Sonnet',
@@ -53,7 +63,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'email-triage',
     type: 'cron',
-    position: { x: 300, y: 450 },
+    position: { x: COL.cron, y: ROW },
     data: {
       label: 'Email Triage',
       model: 'Sonnet',
@@ -67,7 +77,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'newsletter-audit',
     type: 'cron',
-    position: { x: 300, y: 600 },
+    position: { x: COL.cron, y: ROW * 2 },
     data: {
       label: 'Newsletter Audit',
       model: 'Sonnet',
@@ -81,7 +91,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'skill-discovery',
     type: 'cron',
-    position: { x: 500, y: 450 },
+    position: { x: COL.cron, y: ROW * 3 },
     data: {
       label: 'Skill Discovery',
       model: 'Sonnet',
@@ -95,7 +105,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'amazon-scout',
     type: 'cron',
-    position: { x: 700, y: 450 },
+    position: { x: COL.cron, y: ROW * 4 },
     data: {
       label: 'Amazon Toy Scout',
       model: 'Sonnet',
@@ -109,7 +119,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'phone-monitor',
     type: 'cron',
-    position: { x: 600, y: 600 },
+    position: { x: COL.cron, y: ROW * 5 },
     data: {
       label: 'Phone Call Monitor',
       model: 'Sonnet',
@@ -123,7 +133,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'proactive-check',
     type: 'cron',
-    position: { x: 500, y: 750 },
+    position: { x: COL.cron, y: ROW * 6 },
     data: {
       label: 'Proactive Check',
       model: 'Main Session',
@@ -137,7 +147,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'workout-reminders',
     type: 'cron',
-    position: { x: 700, y: 750 },
+    position: { x: COL.cron, y: ROW * 7 },
     data: {
       label: 'Workout Reminders',
       model: 'Sonnet',
@@ -148,11 +158,11 @@ export const initialNodes: Node<NodeData>[] = [
     },
   },
 
-  // One-shot
+  // ── Column 4: One-shots (orange) — below agents ──
   {
     id: 'weber-reminder',
     type: 'oneshot',
-    position: { x: 400, y: 900 },
+    position: { x: COL.oneshot, y: ROW * 3 },
     data: {
       label: 'Weber Grill Reminder',
       model: 'Sonnet',
@@ -163,11 +173,11 @@ export const initialNodes: Node<NodeData>[] = [
     },
   },
 
-  // Integrations (Left side)
+  // ── Column 1: Integrations (green) — vertical stack ──
   {
     id: 'gmail',
     type: 'integration',
-    position: { x: 50, y: 400 },
+    position: { x: COL.integration, y: 0 },
     data: {
       label: 'Gmail',
       status: 'active',
@@ -177,7 +187,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'm365',
     type: 'integration',
-    position: { x: 50, y: 500 },
+    position: { x: COL.integration, y: ROW },
     data: {
       label: 'M365 / SophoSTC',
       status: 'active',
@@ -187,7 +197,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'amazon',
     type: 'integration',
-    position: { x: 50, y: 600 },
+    position: { x: COL.integration, y: ROW * 2 },
     data: {
       label: 'Amazon.ae',
       status: 'active',
@@ -197,7 +207,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'coingecko',
     type: 'integration',
-    position: { x: 50, y: 700 },
+    position: { x: COL.integration, y: ROW * 3 },
     data: {
       label: 'CoinGecko',
       status: 'active',
@@ -207,7 +217,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'brave-search',
     type: 'integration',
-    position: { x: 50, y: 800 },
+    position: { x: COL.integration, y: ROW * 4 },
     data: {
       label: 'Brave Search',
       status: 'active',
@@ -217,7 +227,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'clawdhub',
     type: 'integration',
-    position: { x: 50, y: 900 },
+    position: { x: COL.integration, y: ROW * 5 },
     data: {
       label: 'ClawdHub',
       status: 'active',
@@ -227,7 +237,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'twilio',
     type: 'integration',
-    position: { x: 50, y: 1000 },
+    position: { x: COL.integration, y: ROW * 6 },
     data: {
       label: 'Twilio Phone Agent',
       status: 'active',
@@ -237,7 +247,7 @@ export const initialNodes: Node<NodeData>[] = [
   {
     id: 'weather',
     type: 'integration',
-    position: { x: 50, y: 1100 },
+    position: { x: COL.integration, y: ROW * 7 },
     data: {
       label: 'Weather (wttr.in)',
       status: 'active',
@@ -245,11 +255,11 @@ export const initialNodes: Node<NodeData>[] = [
     },
   },
 
-  // Delivery (Right side)
+  // ── Column 5: Delivery (pink) ──
   {
     id: 'telegram',
     type: 'delivery',
-    position: { x: 1000, y: 600 },
+    position: { x: COL.delivery, y: ROW * 3 },
     data: {
       label: 'Telegram (Sabri)',
       status: 'active',
